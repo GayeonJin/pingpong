@@ -3,6 +3,8 @@
 import sys
 import time
 import pygame
+import pymunk
+import pymunk.pygame_util
 
 COLOR_BLACK = (0, 0, 0)
 COLOR_WHITE = (255, 255, 255)
@@ -22,6 +24,8 @@ class game_ctrl :
         self.surface = surface
         self.width = surface.get_width()
         self.height = surface.get_height()
+
+        self.space = pymunk.Space()
 
     def save_scr_capture(self, prefix) :
         pygame.image.save(self.surface,(prefix + time.strftime('%Y%m%d%H%M%S')+ '.jpg'))

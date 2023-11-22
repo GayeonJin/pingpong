@@ -42,36 +42,10 @@ def terminate() :
     pygame.quit()
     sys.exit()
 
-def coll_begin_ball(arbiter, space, data) :
-    global ball
-
-    # print('begin :', arbiter.shapes[0].body.position)
-
-    ball.set_position((gctrl.width / 2, gctrl.height / 2))
-    ball.set_velociy(400, random.randrange(-200, 200))
-
-    return False
-
-def coll_begin_bar1(arbiter, space, data) :
-    global bars
-
-    bars[0].set_velociy(0, 0)
-
-    return False
-
-def coll_begin_bar2(arbiter, space, data) :
-    global bars
-
-    bars[1].set_velociy(0, 0)
-
-    return False
-
 def start_game() :
     global clock
     global ball
     global bars
-
-    space = pymunk.Space()
 
     draw_options = pymunk.pygame_util.DrawOptions(gctrl.surface)
 
@@ -81,7 +55,7 @@ def start_game() :
     sx = 5
     sy = 5
     ex = gctrl.width - 5
-    ey = gctrl.height -5
+    ey = gctrl.height - 5
     
     walls = []
     walls.append(wall_object((sx, sy), (sx, ey), VWALL_COLLISION_TYPE))
@@ -90,7 +64,7 @@ def start_game() :
     walls.append(wall_object((sx, ey), (ex, ey), HWALL_COLLISION_TYPE))
 
     for object in walls :
-        space.add(object.body, object.shape)
+        gctrl.space.add(object.body, object.shape)
     
     bar_sy = centery - (BAR_WIDTH / 2)
     bar_ey = centery + (BAR_WIDTH / 2)
@@ -102,22 +76,19 @@ def start_game() :
     bars.append(bar_object((bar2_x, bar_sy), (bar2_x, bar_ey), BAR2_COLLISION_TYPE))
 
     for object in bars :
-        space.add(object.body, object.shape)
+        gctrl.space.add(object.body, object.shape)
 
     ball = ball_object((centerx, centery))
-    ball.set_velociy(400, random.randrange(-200, 200))
-    space.add(ball.body, ball.shape)
+    gctrl.space.add(ball.body, ball.shape)
 
-    coll_handler1 = space.add_collision_handler(BALL_COLLISION_TYPE, VWALL_COLLISION_TYPE)
-    coll_handler1.begin = coll_begin_ball
+    coll_handler1 = gctrl.space.add_collision_handler(BALL_COLLISION_TYPE, VWALL_COLLISION_TYPE)
+    coll_handler1.begin = ball.coll_begin
 
-    coll_handler2 = space.add_collision_handler(BAR1_COLLISION_TYPE, HWALL_COLLISION_TYPE)
-    coll_handler2.begin = coll_begin_bar1
-    coll_handler2.post_solve = coll_begin_bar1
+    coll_handler2 = gctrl.space.add_collision_handler(BAR1_COLLISION_TYPE, HWALL_COLLISION_TYPE)
+    coll_handler2.begin = bars[0].coll_begin
 
-    coll_handler3 = space.add_collision_handler(BAR2_COLLISION_TYPE, HWALL_COLLISION_TYPE)
-    coll_handler3.begin = coll_begin_bar2
-    coll_handler3.post_solve = coll_begin_bar2    
+    coll_handler3 = gctrl.space.add_collision_handler(BAR2_COLLISION_TYPE, HWALL_COLLISION_TYPE)
+    coll_handler3.begin = bars[1].coll_begin
 
     timeStep = 1.0 / 60
 
@@ -157,9 +128,9 @@ def start_game() :
 
         gctrl.surface.fill(COLOR_BLACK)
 
-        space.debug_draw(draw_options)
+        gctrl.space.debug_draw(draw_options)
 
-        space.step(timeStep)
+        gctrl.space.step(timeStep)
 
         pygame.display.flip()
         clock.tick(60)

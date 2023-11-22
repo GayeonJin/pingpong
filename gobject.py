@@ -3,6 +3,9 @@
 import pygame
 import pymunk
 import pymunk.pygame_util
+import random
+
+from gresource import *
 
 BALL_COLLISION_TYPE = 1
 VWALL_COLLISION_TYPE = 2
@@ -20,11 +23,21 @@ class ball_object :
         self.shape.elasticity = 1
         self.shape.collision_type = BALL_COLLISION_TYPE
 
+        self.set_velociy(400, random.randrange(-200, 200))
+
     def set_position(self, pos) :
         self.body.position = pos
 
     def set_velociy(self, vel_x, vel_y) :
         self.body.velocity = (vel_x, vel_y)
+
+    def coll_begin(self, arbiter, space, data) :
+        # print('begin :', arbiter.shapes[0].body.position)
+
+        self.set_position((gctrl.width / 2, gctrl.height / 2))
+        self.set_velociy(400, random.randrange(-200, 200))
+
+        return False
 
 class wall_object :
     def __init__(self, pos1, pos2, collision_type = None, radius = 2) :
@@ -51,6 +64,11 @@ class bar_object :
 
     def get_position_b(self) :
         return self.body.local_to_world(self.shape.b)
+    
+    def coll_begin(self, arbiter, space, data) :
+        self.set_velociy(0, 0)
+
+        return False
 
 if __name__ == '__main__' :
     print('pymunk object')
