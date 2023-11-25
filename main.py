@@ -29,12 +29,8 @@ def draw_info() :
     gctrl.surface.blit(info, (INFO_OFFSET * 2, gctrl.height - 2 * INFO_FONT - INFO_OFFSET)) 
 
 def draw_message(str) :
-    font = pygame.font.Font('freesansbold.ttf', 40)
-    text_suf = font.render(str, True, COLOR_BLACK)
-    text_rect = text_suf.get_rect()
-    text_rect.center = ((gctrl.width / 2), (gctrl.height / 2))
-
-    gctrl.surface.blit(text_suf, text_rect)
+    gctrl.draw_string(str, 0, 0, ALIGN_CENTER, 40, COLOR_BLACK)
+    
     pygame.display.update()
     sleep(2)
 
@@ -43,10 +39,6 @@ def terminate() :
     sys.exit()
 
 def start_game() :
-    global clock
-    global ball
-    global bars
-
     draw_options = pymunk.pygame_util.DrawOptions(gctrl.surface)
 
     centerx = gctrl.width / 2
@@ -90,8 +82,6 @@ def start_game() :
     coll_handler3 = gctrl.space.add_collision_handler(BAR2_COLLISION_TYPE, HWALL_COLLISION_TYPE)
     coll_handler3.begin = bars[1].coll_begin
 
-    timeStep = 1.0 / 60
-
     running = True
     while running:
         for event in pygame.event.get() :
@@ -130,19 +120,13 @@ def start_game() :
 
         gctrl.space.debug_draw(draw_options)
 
-        gctrl.space.step(timeStep)
-
         pygame.display.flip()
-        clock.tick(60)
+        gctrl.space.step(1.0 / FPS)
+        gctrl.clock.tick(FPS)
 
     pygame.quit()
 
 def init_game() :
-    global clock
-
-    pygame.init()
-    clock = pygame.time.Clock()
-
     pad_width = 800
     pad_height = 400
 
